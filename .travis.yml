@@ -27,19 +27,19 @@ install:
 before_script:
   - docker pull $POSTGRES_IMAGE
   - docker pull $CLAIR_IMAGE
-  - docker run --detach --name clairdb --network $DOCKER_NETWORK -e POSTGRES_PASSWORD="" -e POSTGRES_HOST_AUTH_METHOD=trust $POSTGRES_IMAGE
-  - until docker run --rm -it --network $DOCKER_NETWORK -e PGPASSWORD="" $POSTGRES_IMAGE pg_isready -U postgres -h clairdb; do sleep 1; done
+  - docker run --detach --name clair-db --alias clairdb --network $DOCKER_NETWORK -e POSTGRES_PASSWORD="" -e POSTGRES_HOST_AUTH_METHOD=trust $POSTGRES_IMAGE
+  - until docker run --rm -it --network $DOCKER_NETWORK -e PGPASSWORD="" $POSTGRES_IMAGE pg_isready -U postgres -h clair-db; do sleep 1; done
   - docker run --detach --name clair --network $DOCKER_NETWORK -v $PWD/clair_config:/config $CLAIR_IMAGE -config=/config/config.yaml
 
 script:
   - sh .travis/check.sh
 
 after_success:
-  - docker exec clairdb /bin/sh -c "pg_dump -U postgres -a -t feature -t keyvalue -t namespace -t schema_migrations -t vulnerability -t vulnerability_fixedin_feature" > vulnerability.sql
-  - docker exec clairdb /bin/sh -c "pg_dump -U postgres -c -s" > clear.sql
+  - docker exec clair-db /bin/sh -c "pg_dump -U postgres -a -t feature -t keyvalue -t namespace -t schema_migrations -t vulnerability -t vulnerability_fixedin_feature" > vulnerability.sql
+  - docker exec clair-db /bin/sh -c "pg_dump -U postgres -c -s" > clear.sql
   - tar -Jcf clair-db-$(date +%Y-%m-%d).txz vulnerability.sql clear.sql
   - docker stop clair
-  - docker stop clairdb
+  - docker stop clair-db
   - sh .travis/push.sh
   #- git config credential.helper "store --file=.git/credentials"
   #- echo "https://${GH_TOKEN}:@github.com" > .git/credentials
