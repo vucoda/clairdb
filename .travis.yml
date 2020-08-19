@@ -41,3 +41,5 @@ after_success:
   - docker stop clair
   - docker stop clairdb
   - sh .travis/push.sh
+  #- git config credential.helper "store --file=.git/credentials"
+  #- echo "https://${GH_TOKEN}:@github.com" > .git/credentials
