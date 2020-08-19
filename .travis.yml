@@ -1,0 +1,42 @@
+branches:
+  only:
+  - master
+  - /^deploy-.*$/
+
+sudo: required
+
+language: minimal
+
+services:
+  - docker
+
+env:
+  global:
+    - secure: "TB3rCdOMEYJeTjOgpGrmZzU+Re//3kOrz4HiizH4ctZEjpbqkh6EtrnnWkXRuzhGmK5B1gRMHRqNwIkhXC8wgKuYcF+vIbPy8gObh/z2vc7J1AYXQKDLcAXDSsM3v4ogoGK1tdeb93rFz6F649FCP/NFUjH09X4J4XnJkIIaD4BWEPCsHo4mQd0hshMpVnBRMoUJp7oD8ydxcJSVqIBymjIt8X+1vWyYPj0OvQB2VH/3IC8IDe7kXLAfIX+G3GQmdPbOBvoC/E4pdjp0X8L3HhBO4W8z/CWvg64H0eAz7ecuORFqueh3G2F5GvOzABK+G2p4eAdAXMyphzHXgPN2L/Ma3JhUZe6cSW+xUxHhZtuxJANmfisiHe2lq95WH/Oj7Zv7Hct+jnGSBq25wGRQhDjD3De/NQOewxFXqjZNbFb92AvmNPTy7fFmjV4bJ3LLo4m4BR+h+cbN0Mi8CFLAiEH3SypgzOmh9+fENBFCeBrBn1Xcqd60AOO/vHSLew7nHyvYrXJt6nlASPY68TMoE0Yrqg3IyeWdQA2j58Sls9TKeamwe0cgK5C8B/izgVwn2b+juMUf72U5XN723ODRA+7nN0c+QpmFQlJTFMXC6tDe/Z5w/wfU/zWnnpWcFDwQfvath7NHamfeT8glpVhaWURKV/V2T8XVJSBIc4F+eSw="
+    - secure: "GmMNXPfy6Gb/qVHF8yTZfRP7s1B4X6Ys4le+YTZqFVKJXEO/P0gXWlL0v90omSGcEAkptuexBPssDP8COFHz91Dc7ahiwcC3O+BPMI3kGvjBo5UDr6qZ2rUcXgmr4aWGy2l4WwE0CviyXllSxf+NUq2ZAUlabKXN0xVdp9KttIEKek7f2Ix8sME24vE0sPpWj26Xvvf9pVupWKRCUT9/g9wC7pXa0OcLR30hrD0rfSPbOk4rTgqrXknMhgV53ZL9kfd+gnoCPiX+/IB+nAhH3HdBY+DGDwybqb7KoiH+u/Lw7lGve4Fr6UBSjE3Z/UKYOkzQV0Uz3bcvBbJaXDY2PTNJtWH1FKItes1CqaJJmql+mrOEU48F8+6jPt33WnqRvMgnwCrcRbVQZ3KGGh7svYGUV2TiLUz2hisnqOsS61wQUjqg0QgxbDgG4YPQ3pOr3J0mn+1/IXX/CokWb13UidxzlK+OPdehXl8GDAOLzDT4qZ1+3YCdKW+AKkNw83VKexdwj8j/938E+iDEI1AzsP/rW9zMJAOHkBUZU/TKZQOpVwKK9PxxmC6D5XjNTz8qMKs5HPIPp0JMWIYqca+YfuUGaKbdah8hs0OCDalbBfipevLRDkdZMmm9CwVicNKNoMxqrYsj6aLNUtQxIerOBT6TbIv1UFRRzxAGse77CRI="
+    -  secure: "IzP4Zi1jMB+7IUJ9W+AiD+MXrQXk+s+99VJojql/b6uO0HYbJwjzSdWUYiC9ph0+Anwh9ek2++Pbc0/mZVXbm7aF6zgfjrdaXXMgCByK1avhhQ2OoDUC6hkzPK3sUw+9B3+jE+IMIIooj+c0uFxvd4QmoeDEvk5d9heiiH6TiC05ZqVTwIVmAt7MMkdBeZJwHbGD65iGZjgkQayzUo6cMdt+2fu3GXlqffkIxX5xkesLvUaKMGdUjb019Qs6nP+NJ+vIsZ0KFE82SCa2H6zB6qOH4rbJxef9nAFPNwrhOdx5k0FdQlq0OnQjt1SimYgYjdi8CUUl4z+73ZJBVDJQTmloJcGXLTKf7YKRO3XGt5WPygi66Ehos193pD7603e1vulvKsUEjjAlDlRTZvJ67unC/kBimvHNv9eQR3jsLgC4lf/jRCg27zU/wGs4XHqdzSOFfAvCBCOTkNeWRk89cyQ6KpqP9DPjumKS5j0Sa5OSk6eAV/j7f2cT7174F5og45idQJs0VC9+WrfPrTV61apH7yiuNXCYU1pOfyZ9dKmd22XQ+YSerOcDbHUHKNQM4IQi2kLoPjsJNEbxOoV3LsEvVbCQ6uiR0ZAPgLaxyxoq33ISHUAwwxWJp4JdekL2Pg4WSewHzP3zfOL4CcrKbiAVK+WiCZEJ9EXIpU6wIPs="
+  jobs:
+    - POSTGRES_IMAGE=postgres:12-alpine CLAIR_IMAGE=quay.io/coreos/clair:v2.1.4 DOCKER_NETWORK=clair
+
+install:
+  - mkdir clair_config
+  - curl -L https://raw.githubusercontent.com/coreos/clair/master/config.yaml.sample -o clair_config/config.yaml
+  - docker network create $DOCKER_NETWORK
+
+before_script:
+  - docker pull $POSTGRES_IMAGE
+  - docker pull $CLAIR_IMAGE
+  - docker run --detach --name clairdb --network $DOCKER_NETWORK -e POSTGRES_PASSWORD="" -e POSTGRES_HOST_AUTH_METHOD=trust $POSTGRES_IMAGE
+  - until docker run --rm -it --network $DOCKER_NETWORK -e PGPASSWORD="" $POSTGRES_IMAGE pg_isready -U postgres -h clairdb; do sleep 1; done
+  - docker run --detach --name clair --network $DOCKER_NETWORK -v $PWD/clair_config:/config $CLAIR_IMAGE -config=/config/config.yaml
+
+script:
+  - sh .travis/check.sh
+
+after_success:
+  - docker exec clairdb /bin/sh -c "pg_dump -U postgres -a -t feature -t keyvalue -t namespace -t schema_migrations -t vulnerability -t vulnerability_fixedin_feature" > vulnerability.sql
+  - docker exec clairdb /bin/sh -c "pg_dump -U postgres -c -s" > clear.sql
+  - tar -Jcf clair-db-$(date +%Y-%m-%d).txz vulnerability.sql clear.sql
+  - docker stop clair
+  - docker stop clairdb
+  - sh .travis/push.sh
