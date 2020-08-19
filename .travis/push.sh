@@ -10,8 +10,8 @@ setup_git() {
 
 setup_repository() {
   # git remote name "origin" appears to not work in travis-ci builds with "remote: Invalid username or password."
-  #git remote add origin-arbitrary-name https://${GH_TOKEN}@github.com/${GH_OWNER}/${GH_REPO}.git > /dev/null 2>&1
-  git remote add origini-arbitrary-name $remote_repo > /dev/null 2>&1
+  git remote add origin-arbitrary https://${GH_TOKEN}@github.com/${GH_OWNER}/${GH_REPO}.git > /dev/null 2>&1
+  #git remote add origini-arbitrary $remote_repo > /dev/null 2>&1
 }
 
 delete_branch() {
@@ -27,7 +27,7 @@ commit_files() {
 }
 
 upload_files() {
-  git push --quiet --set-upstream origin-arbitrary-name $branch
+  git push --quiet --set-upstream origin-arbitrary $branch
   #curl --location --output clair-db.txz $(curl -X GET https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/commits/$branch | jq --raw-output .files[0].raw_url)
 }
 
