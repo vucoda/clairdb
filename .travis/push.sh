@@ -9,8 +9,8 @@ setup_git() {
 }
 
 setup_repository() {
-  #git remote add origin https://${GH_TOKEN}@github.com/${GH_OWNER}/${GH_REPO}.git > /dev/null 2>&1
-  git remote add origin $remote_repo > /dev/null 2>&1
+  git remote add origin https://${GH_TOKEN}@github.com/${GH_OWNER}/${GH_REPO}.git > /dev/null 2>&1
+  #git remote add origin $remote_repo > /dev/null 2>&1
 }
 
 delete_branch() {

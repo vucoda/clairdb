@@ -20,6 +20,7 @@ env:
 
 install:
   - mkdir clair_config
+  # https://raw.githubusercontent.com/Allda/clair/5b4b38edd1c72f08a696a6c103d411165de93ce0/config.yaml.sample
   - curl -L https://raw.githubusercontent.com/coreos/clair/master/config.yaml.sample -o clair_config/config.yaml
   - docker network create $DOCKER_NETWORK
 
